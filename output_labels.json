@@ -1,0 +1,23 @@
+[
+  {
+    "label": "metal band",
+    "det_score": 0.323,
+    "sam_score": 0.98,
+    "mask_pixels": 212053,
+    "mask_percent": 27.96
+  },
+  {
+    "label": "gemstone",
+    "det_score": 0.284,
+    "sam_score": 0.984,
+    "mask_pixels": 16472,
+    "mask_percent": 2.17
+  },
+  {
+    "label": "metal band",
+    "det_score": 0.265,
+    "sam_score": 0.954,
+    "mask_pixels": 179133,
+    "mask_percent": 23.62
+  }
+]
