@@ -47,3 +47,38 @@ Upload an image of a jewelry design.
 3. Users can select components and change materials.
 
 4. The customized model can be exported.
+
+
+Streamlit UI
+
+This repo now includes a simple Streamlit app that:
+
+1. Accepts a 2D jewelry image upload.
+2. Segments components (Grounding DINO + SAM2).
+3. Runs TripoSG 2D to 3D generation and returns a GLB.
+4. Shows segmented output and 3D rendered output in one interface.
+
+Files:
+
+- streamlit_app.py
+- requirements.txt
+
+Run:
+
+1. Install dependencies:
+
+     pip install -r requirements.txt
+
+2. Start the app:
+
+     streamlit run streamlit_app.py
+
+3. In the sidebar, set TripoSG command with placeholders:
+
+     python TripoSG/main.py --image {input} --output {output}
+
+Notes:
+
+- The command must write a GLB file to the {output} path.
+- If TripoSG command is not set or fails, the app falls back to output.glb in repo root if present.
+- SAM2 is optional in this UI. If SAM2 is unavailable, the app uses bounding-box masks as a fallback so you can still run end-to-end.
