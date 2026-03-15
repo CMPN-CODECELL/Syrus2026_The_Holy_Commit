@@ -359,6 +359,7 @@ def main():
 
             with st.spinner("Running TripoSG 2D -> 3D..."):
                 success, msg = run_triposg_command(triposg_command, input_path, output_glb_path)
+                triposg_error = msg if not success else ""
 
                 # Fallback for demo repos that already contain a sample output.glb
                 if not success:
@@ -373,6 +374,8 @@ def main():
 
             if success:
                 st.success(msg)
+                if triposg_error:
+                    st.warning(f"Original TripoSG error: {triposg_error}")
                 st.subheader("3D Rendered Output (GLB Preview)")
                 render_glb_preview(output_glb_path)
 
