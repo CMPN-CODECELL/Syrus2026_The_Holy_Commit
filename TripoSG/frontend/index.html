@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JewelForge — 2D → 3D Jewelry Studio</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #faf9f7;
+      color: #2c2825;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ─────────────────────────────────────── */
+    header {
+      padding: 20px 36px;
+      background: #fff;
+      border-bottom: 1px solid #e8e4df;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: #1a1714;
+      letter-spacing: 0.02em;
+    }
+    header span {
+      font-size: 0.78rem;
+      color: #9c9590;
+      font-weight: 300;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    /* ── Main Layout ────────────────────────────────── */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      overflow: hidden;
+    }
+
+    /* ── Left Panel ─────────────────────────────────── */
+    .panel {
+      background: #fff;
+      border-right: 1px solid #e8e4df;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .section {
+      padding: 24px 28px;
+      border-bottom: 1px solid #f0ece7;
+    }
+    .section h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #3d3630;
+      margin-bottom: 16px;
+      letter-spacing: 0.01em;
+    }
+
+    /* Upload zone */
+    #drop-zone {
+      border: 2px dashed #d4cfc8;
+      border-radius: 12px;
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.25s, background 0.25s;
+      background: #faf9f7;
+    }
+    #drop-zone:hover, #drop-zone.drag-over {
+      border-color: #8b7355;
+      background: #f5f0ea;
+    }
+    #drop-zone .icon {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+      opacity: 0.6;
+    }
+    #drop-zone p {
+      font-size: 0.82rem;
+      color: #9c9590;
+      line-height: 1.5;
+    }
+    #drop-zone input { display: none; }
+
+    #preview-original {
+      margin-top: 14px;
+      width: 100%;
+      border-radius: 10px;
+      display: none;
+      object-fit: contain;
+      max-height: 200px;
+      background: #faf9f7;
+      border: 1px solid #e8e4df;
+    }
+
+    #btn-generate {
+      width: 100%;
+      padding: 13px;
+      background: #2c2825;
+      color: #f5f0ea;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 14px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    #btn-generate:hover:not(:disabled) { background: #1a1714; transform: translateY(-1px); }
+    #btn-generate:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    #status {
+      font-size: 0.78rem;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: none;
+      line-height: 1.4;
+    }
+    #status.info  { background: #eef4fb; color: #3b6fa0; display: block; }
+    #status.error { background: #fdf0ef; color: #a04040; display: block; }
+    #status.ok    { background: #f0f7f1; color: #3a7a4a; display: block; }
+
+    /* Segmentation preview */
+    .seg-area { display: flex; flex-direction: column; gap: 10px; }
+    #preview-seg,
+    #preview-seg-masks {
+      width: 100%;
+      border-radius: 10px;
+      display: none;
+      object-fit: contain;
+      max-height: 220px;
+      background: #faf9f7;
+      border: 1px solid #e8e4df;
+    }
+    #seg-placeholder {
+      border: 1px dashed #d4cfc8;
+      border-radius: 10px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #c4bfb8;
+      font-size: 0.8rem;
+      font-style: italic;
+    }
+
+    /* ── Right Panel — 3D Viewer ────────────────────── */
+    .viewer-wrap {
+      position: relative;
+      background: #0e0e11;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #viewer-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    #viewer-placeholder {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      color: #4a4540;
+    }
+    #viewer-placeholder .big-icon { font-size: 3.5rem; opacity: 0.25; }
+    #viewer-placeholder p { font-size: 0.85rem; color: #5a5550; }
+
+    #viewer-controls-hint {
+      position: absolute;
+      bottom: 14px;
+      right: 18px;
+      font-size: 0.68rem;
+      color: #555;
+      letter-spacing: 0.02em;
+    }
+
+    /* Loading overlay */
+    #loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(14,14,17,0.88);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+    #loading-overlay.visible { display: flex; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 2.5px solid #333;
+      border-top-color: #b09878;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading-text { color: #b09878; font-size: 0.85rem; letter-spacing: 0.02em; }
+
+    /* ── Responsive ─────────────────────────────────── */
+    @media (max-width: 800px) {
+      main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+      .panel { border-right: none; border-bottom: 1px solid #e8e4df; max-height: 55vh; }
+    }
+  </style>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three":          "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/":  "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+<header>
+  <div>💎</div>
+  <h1>JewelForge</h1>
+  <span>Image → Segmentation → 3D</span>
+</header>
+
+<main>
+  <!-- ── Left panel ── -->
+  <aside class="panel">
+
+    <!-- Upload -->
+    <div class="section">
+      <h2>Upload Image</h2>
+      <div id="drop-zone">
+        <div class="icon">📷</div>
+        <p>Click or drag & drop a jewelry image</p>
+        <input type="file" id="file-input" accept="image/*" />
+      </div>
+      <img id="preview-original" alt="Original preview" />
+      <button id="btn-generate" disabled>Generate 3D Model</button>
+      <div id="status"></div>
+    </div>
+
+    <!-- Segmentation preview -->
+    <div class="section">
+      <h2>Segmentation Mask</h2>
+      <div class="seg-area">
+        <div id="seg-placeholder">Will appear after generation…</div>
+        <img id="preview-seg"       alt="DINO bounding boxes" />
+        <img id="preview-seg-masks" alt="SAM2 segmentation masks" />
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ── 3D Viewer ── -->
+  <div class="viewer-wrap">
+    <canvas id="viewer-canvas"></canvas>
+
+    <div id="viewer-placeholder">
+      <div class="big-icon">💎</div>
+      <p>3D model will appear here</p>
+    </div>
+
+    <div id="loading-overlay">
+      <div class="spinner"></div>
+      <div id="loading-text">Generating… this may take a minute</div>
+    </div>
+
+    <div id="viewer-controls-hint">
+      Drag to rotate · Scroll to zoom · Right-drag to pan
+    </div>
+  </div>
+</main>
+
+<script type="module" src="viewer.js"></script>
+</body>
+</html>

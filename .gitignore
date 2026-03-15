@@ -1,0 +1,23 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Pretrained weights (too large — downloaded automatically on first run)
+TripoSG/pretrained_weights/
+
+# Generated outputs and uploads
+TripoSG/outputs/
+TripoSG/uploads/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+
+# Misc
+.env
+.DS_Store
+*.glb
+*.log
