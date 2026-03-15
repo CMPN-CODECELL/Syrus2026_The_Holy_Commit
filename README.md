@@ -1,8 +1,8 @@
 AI-Driven 2D to 3D Jewelry Generation with Real-Time Customization
 Track: Agentic AI [Rezinix AI]
 
-Link to the slides:
-Link to the video:
+Link to the slides: https://www.canva.com/design/DAHD1RBm7fI/uVQCpFW1YYFIr0fyPo6YfA/edit?utm_content=DAHD1RBm7fI&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+Link to the video: https://drive.google.com/file/d/14P8It-dMuIsPgu_DZfJ7NhS7WaNIrj0Q/view?usp=sharing
 
 JewelForge converts a single jewelry image into a customizable 3D model.
 
