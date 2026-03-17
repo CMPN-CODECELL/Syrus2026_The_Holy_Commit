@@ -1,0 +1,4 @@
+{
+    "projector": "nvdiffrast",
+    "notes": "Change to 'pytorch3d' or 'trimesh_raycast' if nvdiffrast didn't install"
+}
