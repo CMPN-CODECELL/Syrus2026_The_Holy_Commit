@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo \"exit: $?\")",
+      "Bash(chmod +x /home/saranshlulla/jewelforge/scripts/download_weights.sh)"
+    ]
+  }
+}
