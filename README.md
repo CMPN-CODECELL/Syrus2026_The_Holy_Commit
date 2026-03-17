@@ -63,7 +63,7 @@ Three autonomous behaviors:
 
 2. **Mesh quality validation** — After 3D generation, the system checks if the mesh is collapsed/flat, retries with a rotated input image, or falls back to a cached demo mesh.
 
-3. **Multi-step goal planning** — User says "make this premium under $1000" → LLM plans a sequence (white gold + CZ), executes multiple tool calls, verifies the budget constraint, then responds.
+3. **Multi-step goal planning** — User says "make this premium under Rs. 80000" → LLM plans a sequence (white gold + CZ), executes multiple tool calls, verifies the budget constraint, then responds.
 
 ## API Endpoints
 
