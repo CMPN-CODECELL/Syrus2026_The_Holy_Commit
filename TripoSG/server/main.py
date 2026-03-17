@@ -14,7 +14,6 @@ Run from the TripoSG directory:
 """
 import io
 import os
-import shutil
 import sys
 import uuid
 import logging
@@ -206,10 +205,6 @@ async def generate(
     except Exception as exc:
         log.exception("Pipeline failed")
         raise HTTPException(500, f"Pipeline error: {exc}")
-
-    src = "/home/saranshlulla/Documents/Syrus/output_boxes.png"
-    if os.path.isfile(src):
-        shutil.copy(src, os.path.join(OUTPUTS_DIR, "seg_boxes.png"))
 
     # Return URL paths relative to this server.
     # seg_boxes / seg_masks are only present when DINO+SAM2 ran (not HSV fallback).

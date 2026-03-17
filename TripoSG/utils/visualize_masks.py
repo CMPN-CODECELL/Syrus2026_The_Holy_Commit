@@ -29,7 +29,14 @@ def get_rmbg_mask(image_path: str, rmbg_net) -> np.ndarray:
         rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     orig_h, orig_w = rgb.shape[:2]
-    rgb_tensor = torch.from_numpy(rgb).cuda().float().permute(2, 0, 1) / 255.0
+
+    # Infer device from the model so this works with CPU or CUDA.
+    try:
+        device = next(rmbg_net.parameters()).device
+    except StopIteration:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    rgb_tensor = torch.from_numpy(rgb).to(device).float().permute(2, 0, 1) / 255.0
 
     # Resize to 1024 for RMBG inference
     resize_1024 = transforms.Resize((1024, 1024), antialias=True)
@@ -40,7 +47,8 @@ def get_rmbg_mask(image_path: str, rmbg_net) -> np.ndarray:
         result = rmbg_net(norm)
     # result[0][0] is (1, H, W) — keep channel dim so Resize works correctly
     alpha = result[0][0]  # shape: (1, H, W)
-    torch.cuda.synchronize()  # ensure RMBG kernel is fully done before next ops
+    if device.type == "cuda":
+        torch.cuda.synchronize()  # ensure RMBG kernel is fully done before next ops
 
     # Resize back to original resolution (needs ≥3D tensor)
     resize_back = transforms.Resize((orig_h, orig_w), antialias=True)
