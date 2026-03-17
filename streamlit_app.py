@@ -4,6 +4,7 @@ import json
 import os
 import shlex
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from typing import List, Dict, Any, Tuple
@@ -27,6 +28,11 @@ DEFAULT_LABELS = [
     "setting.",
     "stone.",
 ]
+
+DEFAULT_TRIPOSR_COMMAND = (
+    f'"{sys.executable}" triposr_runner.py --input {{input}} --output {{output}} '
+    "--repo TripoSR --resolution 256 --chunk-size 4096"
+)
 
 
 @st.cache_resource
@@ -271,9 +277,12 @@ def main():
             help="Each label should end with a period. Example: gemstone.",
         )
         triposg_command = st.text_input(
-            "TripoSG command",
-            value="",
-            help="Use placeholders {input} and {output}, for example: python TripoSG/main.py --image {input} --output {output}",
+            "TripoSG/TripoSR command",
+            value=DEFAULT_TRIPOSR_COMMAND,
+            help=(
+                "Use placeholders {input} and {output}. Default command runs local TripoSR via triposr_runner.py. "
+                "First clone TripoSR into a TripoSR folder in repo root."
+            ),
         )
 
     upload = st.file_uploader("Upload 2D jewelry image", type=["png", "jpg", "jpeg", "webp"])
@@ -390,7 +399,7 @@ def main():
                 st.error(msg)
                 st.info(
                     "Set a valid TripoSG command in the sidebar with placeholders {input} and {output}. "
-                    "Example: python TripoSG/main.py --image {input} --output {output}"
+                    "Example: python triposr_runner.py --input {input} --output {output} --repo TripoSR"
                 )
 
 
