@@ -23,7 +23,7 @@ class JewelrySegmenter:
         from sam2.build_sam import build_sam2
         from sam2.sam2_image_predictor import SAM2ImagePredictor
         sam2 = build_sam2(
-            "weights/sam2.1_hiera_s.yaml",
+            "configs/sam2.1/sam2.1_hiera_s.yaml",
             "weights/sam2.1_hiera_small.pt",
             device=self.device,
         )
@@ -78,9 +78,9 @@ class JewelrySegmenter:
             segments.append({
                 "label": phrase.strip(),
                 "bbox": box.tolist(),
-                "confidence": logit.item(),
+                "confidence": float(logit.item()),
                 "mask": masks[0],
-                "area_fraction": masks[0].sum() / (h * w),
+                "area_fraction": float(masks[0].sum() / (h * w)),
                 "segment_id": i,
             })
         return segments

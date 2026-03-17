@@ -19,7 +19,7 @@ export function useAgent(jobId, onPriceUpdate) {
     } catch (err) {
       setMessages(prev => [...prev, {
         role: 'assistant',
-        text: 'Sorry, something went wrong. Please try again.',
+        text: err.message || 'Sorry, something went wrong. Please try again.',
       }])
     } finally {
       setIsTyping(false)

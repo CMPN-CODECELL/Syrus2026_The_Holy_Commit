@@ -1,0 +1,31 @@
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Node
+frontend/node_modules/
+frontend/package-lock.json
+
+# Model weights & large binaries
+backend/weights/TripoSG/
+backend/weights/RMBG-1.4/
+backend/weights/*.pt
+backend/weights/*.pth
+backend/weights/*.pth.bad
+backend/weights/*.yaml
+
+# Runtime outputs & uploads
+backend/outputs/
+backend/uploads/
+
+# Cloned repos
+TripoSG/
+
+# Root-level model files
+*.pt
+*.pth

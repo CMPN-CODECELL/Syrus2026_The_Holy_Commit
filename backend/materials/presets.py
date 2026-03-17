@@ -56,3 +56,15 @@ def is_metal(material_key: str) -> bool:
 
 def is_gemstone(material_key: str) -> bool:
     return material_key in GEMSTONE_KEYS
+
+
+def get_all_material_keys() -> list:
+    return list(METAL_PRESETS.keys()) + list(GEMSTONE_PRESETS.keys())
+
+
+def get_preset(material_key: str) -> dict:
+    if material_key in METAL_PRESETS:
+        return METAL_PRESETS[material_key]
+    if material_key in GEMSTONE_PRESETS:
+        return GEMSTONE_PRESETS[material_key]
+    raise KeyError(f"Unknown material: {material_key}")

@@ -1,81 +1,84 @@
-# JewelForge v2
+"""
+Agent system prompt and tool definitions — Gemini format.
+"""
+from materials.presets import METAL_PRESETS, GEMSTONE_PRESETS, get_all_material_keys
 
-MODEL = "claude-sonnet-4-6"
+_metal_list = "\n".join(
+    f"  - {key}: {p['name']} (${p['price_per_gram']:.2f}/gram)"
+    for key, p in METAL_PRESETS.items()
+)
+_gem_list = "\n".join(
+    f"  - {key}: {p['name']} (${p['price_per_carat']:.2f}/carat)"
+    for key, p in GEMSTONE_PRESETS.items()
+)
 
-SYSTEM_PROMPT = """You are JewelForge AI, an expert jewelry customization assistant.
+SYSTEM_PROMPT = f"""You are JewelForge AI, a jewelry customization assistant.
 
-You help users customize 3D jewelry models by:
-1. Applying materials (metals and gemstones) to jewelry components
-2. Estimating and managing pricing within budgets
-3. Suggesting creative combinations and budget alternatives
+You help users customize 3D jewelry by changing materials and estimating prices.
 
-Current jewelry state is provided at the end of each user message in [State: ...] format.
+When the user gives you a goal (like "make this premium under $1000"), you should:
+1. THINK about what combinations achieve the goal
+2. EXECUTE changes using apply_material
+3. CHECK the price using estimate_price
+4. ADJUST if the result doesn't meet the goal
 
-When the user has a goal like "make this premium under $1000", you should:
-1. Plan which materials to apply (think step by step)
-2. Use apply_material for each component
-3. Use estimate_price to verify the total
-4. Confirm the goal was met in your response
+You can call multiple tools in sequence for complex goals.
 
-Always be concise, helpful, and jewelry-savvy. Mention specific material names.
-If a budget constraint cannot be met, explain why and suggest the closest alternative.
+Available metals:
+{_metal_list}
 
-Available metals: yellow_gold, white_gold, rose_gold, platinum, silver, copper
-Available gemstones: diamond, ruby, sapphire, emerald, amethyst, topaz, cubic_zirconia
+Available gemstones:
+{_gem_list}
+
+Component names: metal_band, metal_body, gemstone_center, gemstone_accent_0, prong
+
+Rules:
+1. After EVERY material change, call estimate_price.
+2. If the user gives a budget, verify the total is under budget before responding.
+3. Be concise. Lead with what you did and the new price.
+4. "Premium" = platinum/white gold + diamond/sapphire. "Budget" = silver/copper + CZ/amethyst.
 """
 
-TOOLS = [
-    {
-        "name": "apply_material",
+# Gemini function declarations format
+TOOL_FUNCTIONS = {
+    "apply_material": {
         "description": (
-            "Apply a metal or gemstone material to a specific jewelry component. "
-            "Use this to change the material of bands, settings, prongs, gemstones, etc."
+            "Change the material of a specific component on the current 3D model. "
+            "Call when user wants to change metal or gemstone type."
         ),
-        "input_schema": {
+        "parameters": {
             "type": "object",
             "properties": {
                 "component": {
                     "type": "string",
-                    "description": (
-                        "The component name to update (e.g. 'metal_band', 'gemstone_center', "
-                        "'prong_0'). Must match a component from the current state."
-                    ),
+                    "description": "Component name (e.g. 'metal_band', 'gemstone_center')",
                 },
                 "material": {
                     "type": "string",
-                    "description": (
-                        "The material key to apply. Metals: yellow_gold, white_gold, rose_gold, "
-                        "platinum, silver, copper. Gemstones: diamond, ruby, sapphire, emerald, "
-                        "amethyst, topaz, cubic_zirconia."
-                    ),
+                    "description": f"Material key. One of: {', '.join(get_all_material_keys())}",
+                    "enum": get_all_material_keys(),
                 },
             },
             "required": ["component", "material"],
         },
     },
-    {
-        "name": "estimate_price",
-        "description": (
-            "Calculate the current price based on all applied materials. "
-            "Returns a detailed breakdown of material costs, labor, and total."
-        ),
-        "input_schema": {
+    "estimate_price": {
+        "description": "Get current price estimate. Call after every material change.",
+        "parameters": {
             "type": "object",
             "properties": {},
-            "required": [],
         },
     },
-    {
-        "name": "suggest_alternatives",
-        "description": (
-            "Suggest budget-friendly material alternatives for the current configuration. "
-            "Returns a ranked list of swaps with savings amounts. "
-            "Use this when the user has a budget constraint."
-        ),
-        "input_schema": {
+    "suggest_alternatives": {
+        "description": "Get ranked budget-friendly alternatives for current config.",
+        "parameters": {
             "type": "object",
-            "properties": {},
-            "required": [],
+            "properties": {
+                "budget": {
+                    "type": "number",
+                    "description": "Target budget in USD (optional)",
+                },
+            },
         },
     },
-]
+}

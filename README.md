@@ -9,7 +9,7 @@ Upload a 2D jewelry image → AI segments it into components, generates a 3D mod
 ```bash
 # 1. Start backend
 cd backend
-export ANTHROPIC_API_KEY="sk-ant-your-key-here"
+export GOOGLE_API_KEY="AIzaSyA2IWFR3z42aQlUkDkxumlJAEOX8Yb5-zk"
 uvicorn main:app --reload --port 8000
 
 # 2. Start frontend (new terminal)

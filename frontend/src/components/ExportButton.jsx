@@ -3,7 +3,7 @@ export default function ExportButton({ meshUrl, jobId }) {
 
   const handleDownload = () => {
     const a = document.createElement('a')
-    a.href = `http://localhost:8000${meshUrl}`
+    a.href = meshUrl
     a.download = `jewelforge_${jobId}.glb`
     document.body.appendChild(a)
     a.click()

@@ -78,16 +78,12 @@ def check_weights():
 
 check("Model weights present", check_weights)
 
-# 7. nvdiffrast (optional)
-def check_nvdiffrast():
-    import nvdiffrast.torch as dr  # noqa: F401
-    print(" (GPU rasterization available)", end="")
+# 7. trimesh raycasting (primary approach)
+def check_raycasting():
+    from texture.bake_and_project import MeshProjector  # noqa: F401
+    print(" (trimesh raycasting — no GPU needed)", end="")
 
-try:
-    check("nvdiffrast (GPU rasterization)", check_nvdiffrast)
-except Exception:
-    checks_total += 1  # already counted but didn't pass
-    print(f"  ~ nvdiffrast not available — trimesh raycasting fallback will be used")
+check("trimesh raycasting (texture projection)", check_raycasting)
 
 # 8. trimesh
 def check_trimesh():
@@ -97,15 +93,12 @@ def check_trimesh():
 
 check("trimesh", check_trimesh)
 
-# 9. Anthropic API key
+# 9. Google API key (Gemini)
 def check_api_key():
-    key = os.environ.get("ANTHROPIC_API_KEY", "")
-    assert key.startswith("sk-ant"), (
-        "ANTHROPIC_API_KEY not set or invalid. "
-        "Run: export ANTHROPIC_API_KEY='sk-ant-...'"
-    )
+    key = os.environ.get("GOOGLE_API_KEY", "")
+    assert key, "GOOGLE_API_KEY not set. Run: export GOOGLE_API_KEY='AIzaSyA2IWFR3z42aQlUkDkxumlJAEOX8Yb5-zk'"
 
-check("Anthropic API key", check_api_key)
+check("Gemini API key (GOOGLE_API_KEY)", check_api_key)
 
 # 10. FastAPI importable
 def check_fastapi():
